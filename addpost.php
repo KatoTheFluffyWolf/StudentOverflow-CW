@@ -33,5 +33,5 @@ try {
 }
 ?>
 
-<?php include 'addpost.html.php'; ?>
+<?php include 'templates/addpost.html.php'; ?>
 

@@ -20,7 +20,7 @@ try {
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role'];
 
-        header("Location: index.html.php");
+        header("Location: index.php");
         exit();
     } else {
         // Invalid credentials
@@ -32,4 +32,4 @@ catch (PDOException $e){
     $output = "Unable to connect to the database server: " . $e; 
 }
 ?>
-<?php include 'login.html.php'; ?>
+<?php include 'templates/login.html.php'; ?>
