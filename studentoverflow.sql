@@ -1,9 +1,0 @@
-CREATE TABLE post_upvotes (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  post_id INT NOT NULL,
-  user_id INT NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE (post_id, user_id),
-  FOREIGN KEY (post_id) REFERENCES posts(PostID) ON DELETE CASCADE,
-  FOREIGN KEY (user_id) REFERENCES users(userID) ON DELETE CASCADE
-);
