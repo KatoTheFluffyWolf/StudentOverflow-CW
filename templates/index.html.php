@@ -19,7 +19,7 @@
 
     .card {
       margin: 15px auto;
-      max-width: 700px;
+      max-width: 80vw;
       border-radius: 10px;
       transition: transform 0.1s ease, box-shadow 0.1s ease;
     }
@@ -44,7 +44,7 @@
 </head>
 <body>
 
-<div class="container mt-4 border p-4 bg-white rounded shadow-sm">
+<div class="container my-4">
   <h2 class="text-center mb-4">Latest Questions</h2>
 
   <?php foreach ($posts as $p): ?>
@@ -65,9 +65,13 @@
 
           <h4><?= htmlspecialchars($p['title']) ?></h4>
           <p><?= htmlspecialchars($p['content']) ?></p>
+          
+          <?php if ($p['imgPath']): ?>
+          <img src="<?= htmlspecialchars($p['imgPath']) ?>" alt="Post Image" class="post-image img-fluid">
+          <?php endif; ?>
 
           <!-- Upvote button INSIDE card -->
-          <form method="POST" onClick="event.stopPropagation();">
+          <form method="POST" action="" class="d-inline-block mt-2">
             <input type="hidden" name="post_id" value="<?= $p['postID'] ?>">
             <button type="submit" name="upvote"
               class="btn <?= $alreadyUpvoted ? 'btn-secondary' : 'btn-primary' ?>"

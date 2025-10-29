@@ -4,11 +4,6 @@ include 'config.php';
 
 $pdo = new PDO($dsn, $DB_USER, $DB_PASS);
 
-if (!isset($_GET['id'])) {
-  header("Location: index.php");
-  exit();
-}
-
 $postID = (int) $_GET['id'];
 
 // Handle upvote before fetching post
@@ -30,11 +25,61 @@ if (isset($_POST['upvote']) && isset($_SESSION['user_id'])) {
   header("Location: post_detail.php?id=$postID");
   exit();
 }
+//Handle delete
+if (isset($_POST['delete']) && isset($_SESSION['user_id'])) {
+  $delete = $pdo->prepare("DELETE FROM posts WHERE postID = :pid AND userID = :uid");
+  $delete-> bindValue(':pid', $postID);
+  $delete-> bindValue(':uid', $_SESSION['user_id']);
+  $delete->execute();
+  header("Location: index.php"); // back to main page
+  exit();
+}
+
+// Handle edit (title + content + image)
+if (isset($_POST['edit']) && isset($_SESSION['user_id'])) {
+  $newTitle = $_POST['edited_title'];
+  $newContent = $_POST['edited_content'];
+  $targetFile = $post['imgPath']; // keep old image by default
+
+  //If user uploaded a new image
+  if (isset($_FILES['edited_image'])) {
+    $targetDir = "uploads/";
+
+    $uuid = bin2hex(random_bytes(16));
+    $fileType = strtolower(pathinfo($_FILES["edited_image"]["name"], PATHINFO_EXTENSION));
+    $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+
+    if (in_array($fileType, $allowedTypes)) {
+      $targetFile = $targetDir . $uuid . '.' . $fileType;
+      move_uploaded_file($_FILES["edited_image"]["tmp_name"], $targetFile);
+
+       if (!empty($post['imgPath']) && file_exists($post['imgPath'])) {
+        unlink($post['imgPath']);
+       }
+    }
+  }
+
+  if ($newTitle !== '' && $newContent !== '') {
+    $update = $pdo->prepare("UPDATE posts 
+                             SET title = :title, content = :content, imgPath = :imgPath 
+                             WHERE postID = :pid AND userID = :uid");
+    $update->execute([
+      ':title' => $newTitle,
+      ':content' => $newContent,
+      ':imgPath' => $targetFile,
+      ':pid' => $postID,
+      ':uid' => $_SESSION['user_id']
+    ]);
+  }
+
+  header("Location: post_detail.php?id=$postID");
+  exit();
+}
 
 // Fetch post
 $postQuery = $pdo->prepare("
   SELECT 
-    p.postID, p.title, p.content, u.username, m.moduleName, p.moduleID,
+    p.postID, p.userID, p.title, p.content, u.username, m.moduleName, p.moduleID, p.imgPath, p.dateCreated,
     COUNT(v.voteID) AS upvotes
   FROM posts p
   JOIN users u ON p.userID = u.userID
@@ -43,7 +88,8 @@ $postQuery = $pdo->prepare("
   WHERE p.postID = :id
   GROUP BY p.postID
 ");
-$postQuery->execute([':id' => $postID]);
+$postQuery->bindValue(':id', $postID);
+$postQuery->execute();
 $post = $postQuery->fetch(PDO::FETCH_ASSOC);
 
 // Check if already upvoted
@@ -57,15 +103,40 @@ if (isset($_SESSION['user_id'])) {
 }
 
 // Handle new comment
-if (isset($_POST['comment']) && isset($_SESSION['user_id'])) {
-  $commentContent = $_POST['comment'];
-  if ($commentContent !== '') {
-    $insertCmt = $pdo->prepare("INSERT INTO post_comments (postID, userID, content, created_at) VALUES (:pid, :uid, :content, NOW())");
-    $insertCmt->bindValue(':pid', $postID);
-    $insertCmt->bindValue(':uid', $_SESSION['user_id']);
-    $insertCmt->bindValue(':content', $commentContent);
-    $insertCmt->execute();
+if (isset($_POST['comment'])) {
+  $commentContent = trim($_POST['comment']);
+  $targetFile = null;
+
+  if (isset($_FILES['commentImage'])) {
+    $targetDir = "uploads/";
+    if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
+
+    $uuid = bin2hex(random_bytes(16));
+    $fileType = strtolower(pathinfo($_FILES["commentImage"]["name"], PATHINFO_EXTENSION));
+    $targetFile = $targetDir . $uuid . '.' . $fileType;
+    $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+
+    if (in_array($fileType, $allowedTypes)) {
+      move_uploaded_file($_FILES["commentImage"]["tmp_name"], $targetFile);
+    } else {
+      $targetFile = null;
+    }
   }
+
+  // Insert comment (with or without image)
+  if ($commentContent !== '' || $targetFile !== null) {
+    $insertCmt = $pdo->prepare("
+      INSERT INTO post_comments (postID, userID, content, imgPath, created_at)
+      VALUES (:pid, :uid, :content, :imgPath, NOW())
+    ");
+    $insertCmt->execute([
+      ':pid' => $postID,
+      ':uid' => $_SESSION['user_id'],
+      ':content' => $commentContent,
+      ':imgPath' => $targetFile
+    ]);
+  }
+
   header("Location: post_detail.php?id=$postID");
   exit();
 }
@@ -79,5 +150,29 @@ $cmtQuery = $pdo->prepare("
 ");
 $cmtQuery->execute([':postID' => $postID]);
 $comments = $cmtQuery->fetchAll(PDO::FETCH_ASSOC);
+
+// Handle comment deletion
+if (isset($_POST['delete_comment_id']) && isset($_SESSION['user_id'])) {
+  $commentID = (int) $_POST['delete_comment_id'];
+  $delete = $pdo->prepare("DELETE FROM post_comments WHERE commentID = :cid AND userID = :uid");
+  $delete->execute([':cid' => $commentID, ':uid' => $_SESSION['user_id']]);
+  header("Location: post_detail.php?id=$postID");
+  exit();
+}
+
+// Handle comment edit
+if (isset($_POST['edit_comment_id']) && isset($_SESSION['user_id'])) {
+  $commentID = (int) $_POST['edit_comment_id'];
+  $newText = trim($_POST['edited_comment']);
+
+  if ($newText !== '') {
+    $update = $pdo->prepare("UPDATE post_comments SET content = :content WHERE commentID = :cid AND userID = :uid");
+    $update->execute([':content' => $newText, ':cid' => $commentID, ':uid' => $_SESSION['user_id']]);
+  }
+  header("Location: post_detail.php?id=$postID");
+  exit();
+}
+
+
 ?>
 <?php include 'templates/post_detail.html.php'; ?>

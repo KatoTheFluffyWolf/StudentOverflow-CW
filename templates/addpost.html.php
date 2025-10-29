@@ -73,7 +73,7 @@
 
             <div class="tab-pane fade" id="image">
             <div class="mb-3">
-                <input type="file" name="image" class="form-control" accept="image/*">
+                <input type="file" name="image" class="form-control">
             </div>
             </div>
         </div>

@@ -1,7 +1,10 @@
 <?php
 include 'nav-bar.php';
 include 'config.php';
-
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit();
+}
 
 try {
     $pdo = new PDO($dsn, $DB_USER, $DB_PASS);
@@ -25,7 +28,7 @@ try {
     }
 
     // Fetch all posts with upvote counts
-    $sql = "SELECT p.postID, p.title, p.content, u.username, m.moduleName, p.moduleID,
+    $sql = "SELECT p.postID, p.title, p.content, u.username, m.moduleName, p.moduleID, p.imgPath, p.dateCreated,
                    COUNT(v.voteID) AS upvotes
             FROM posts p
             JOIN users u ON p.userID = u.userID
