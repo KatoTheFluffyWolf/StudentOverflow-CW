@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Newsfeed</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body { background-color: #dae0e6; font-family: Arial; }
     .btn-primary {
@@ -55,7 +54,7 @@
 
     <!-- Optional footer -->
     <div class="card-footer text-center text-muted">
-      Don't have an account? <a href="#">Sign up!</a>
+      Don't have an account? <a href="sign-up.php">Sign up!</a>
     </div>
   </div>
 </div>

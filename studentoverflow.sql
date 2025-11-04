@@ -28,7 +28,7 @@ CREATE TABLE `modules` (
 
 /*Data for the table `modules` */
 
-insert  into `modules`(`moduleID`,`moduleName`) values ('BUSI1314','Business Ethics'),('COMP1753','Programming Foundation'),('DESI1214','Design Thinking');
+insert  into `modules`(`moduleID`,`moduleName`) values ('BUSI1314','Business Ethics'),('COMP1753','Progamming Foundation'),('DESI1214','Design Thinking');
 
 /*Table structure for table `post_comments` */
 
@@ -40,16 +40,17 @@ CREATE TABLE `post_comments` (
   `postID` int(11) DEFAULT NULL,
   `content` text DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
+  `imgPath` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`commentID`),
-  KEY `userID` (`userID`),
-  KEY `postID` (`postID`),
-  CONSTRAINT `post_comments_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `users` (`userID`),
-  CONSTRAINT `post_comments_ibfk_2` FOREIGN KEY (`postID`) REFERENCES `posts` (`postID`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  KEY `post_comments_ibfk_1` (`userID`),
+  KEY `post_comments_ibfk_2` (`postID`),
+  CONSTRAINT `post_comments_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `users` (`userID`) ON DELETE CASCADE,
+  CONSTRAINT `post_comments_ibfk_2` FOREIGN KEY (`postID`) REFERENCES `posts` (`postID`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 /*Data for the table `post_comments` */
 
-insert  into `post_comments`(`commentID`,`userID`,`postID`,`content`,`created_at`) values (2,2,4,'Yoooo\r\n','2025-10-28 15:35:06');
+insert  into `post_comments`(`commentID`,`userID`,`postID`,`content`,`created_at`,`imgPath`) values (8,3,18,'Hehehehe','2025-11-04 15:20:20',NULL),(9,3,18,'','2025-11-04 15:20:52','uploads/6909b764aff5d.jpg');
 
 /*Table structure for table `post_upvotes` */
 
@@ -64,11 +65,11 @@ CREATE TABLE `post_upvotes` (
   KEY `user_id` (`userID`),
   CONSTRAINT `post_upvotes_ibfk_1` FOREIGN KEY (`postID`) REFERENCES `posts` (`postID`) ON DELETE CASCADE,
   CONSTRAINT `post_upvotes_ibfk_2` FOREIGN KEY (`userID`) REFERENCES `users` (`userID`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 /*Data for the table `post_upvotes` */
 
-insert  into `post_upvotes`(`voteID`,`postID`,`userID`) values (4,3,1),(1,4,1),(7,4,2);
+insert  into `post_upvotes`(`voteID`,`postID`,`userID`) values (9,18,3);
 
 /*Table structure for table `posts` */
 
@@ -77,19 +78,21 @@ DROP TABLE IF EXISTS `posts`;
 CREATE TABLE `posts` (
   `postID` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
-  `content` text NOT NULL,
+  `content` text DEFAULT NULL,
   `userID` int(11) DEFAULT NULL,
   `moduleID` varchar(11) DEFAULT NULL,
+  `dateCreated` datetime DEFAULT NULL,
+  `imgPath` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`postID`),
-  KEY `userID` (`userID`),
+  KEY `posts_ibfk_1` (`userID`),
   KEY `posts_ibfk_2` (`moduleID`),
-  CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `users` (`userID`),
-  CONSTRAINT `posts_ibfk_2` FOREIGN KEY (`moduleID`) REFERENCES `modules` (`moduleID`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `users` (`userID`) ON UPDATE CASCADE,
+  CONSTRAINT `posts_ibfk_2` FOREIGN KEY (`moduleID`) REFERENCES `modules` (`moduleID`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 /*Data for the table `posts` */
 
-insert  into `posts`(`postID`,`title`,`content`,`userID`,`moduleID`) values (1,'Should i learn Python ?','Many of my friends have told me that Python is the easiest language to learn.',1,NULL),(2,'Should i learn Python ?','Many of my friends have told me that Python is the easiest language to learn.',1,'COMP1753'),(3,'Should i learn Python?','Many of my friends told me to learn Python. They claim that it\'s the easiest-to-learn programming language.',1,'COMP1753'),(4,'Wa wa wa wa','Skibidi',1,'DESI1214');
+insert  into `posts`(`postID`,`title`,`content`,`userID`,`moduleID`,`dateCreated`,`imgPath`) values (17,'Test','Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',3,'COMP1753','2025-11-04 15:15:37',NULL),(18,'Image Test','Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',3,'DESI1214','2025-11-04 15:20:01','uploads/6909b731da56d.jpg');
 
 /*Table structure for table `users` */
 
@@ -102,13 +105,18 @@ CREATE TABLE `users` (
   `name` varchar(255) NOT NULL,
   `email` varchar(255) DEFAULT NULL,
   `role` varchar(255) DEFAULT NULL,
+  `bio` text DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `major` varchar(255) DEFAULT NULL,
+  `avatarPath` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`userID`),
-  UNIQUE KEY `unique_username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  UNIQUE KEY `unique_username` (`username`),
+  UNIQUE KEY `unique_constraint_name` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 /*Data for the table `users` */
 
-insert  into `users`(`userID`,`username`,`password`,`name`,`email`,`role`) values (1,'Kato','Kato','Duy Anh Nguyen','anhndgcc240003@gmail.com','student'),(2,'admin','admin','John Admin','katotinminecraft@gmail.com','admin');
+insert  into `users`(`userID`,`username`,`password`,`name`,`email`,`role`,`bio`,`created_at`,`major`,`avatarPath`) values (2,'admin','admin','John Admin','anhndgcc240003@gmail.com','admin','Fluffy ?','2025-10-31 14:01:32','Business',NULL),(3,'DesignLord','design','Emma Watson','example@gmail.com','student',NULL,'2025-10-31 14:02:48','Graphic Design',NULL),(4,'NewUser','$2y$10$v/fF4XEycM/eFgmY0ftxBeIYtD3SoReHHLlO5/tMq9J/4.Y.pcmKm','',NULL,'student',NULL,NULL,NULL,NULL);
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

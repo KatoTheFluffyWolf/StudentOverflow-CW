@@ -19,6 +19,7 @@ try {
         $_SESSION['user_id'] = $user['userID'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role'];
+        $_SESSION['email'] = $user['email'];
 
         header("Location: index.php");
         exit();
@@ -31,5 +32,6 @@ try {
 catch (PDOException $e){
     $output = "Unable to connect to the database server: " . $e; 
 }
+
 ?>
 <?php include 'templates/login.html.php'; ?>

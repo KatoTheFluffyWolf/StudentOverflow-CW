@@ -1,72 +1,65 @@
-<?php include 'nav-bar.php'; ?>
-<?php 
+<?php
+include 'nav-bar.php';
 include 'config.php';
+
 try {
     $pdo = new PDO($dsn, $DB_USER, $DB_PASS);
-    $userQuery = "SELECT * FROM modules";
-    $stmt = $pdo->prepare($userQuery);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Load modules for the select
+    $stmt = $pdo->prepare("SELECT * FROM modules");
     $stmt->execute();
     $modules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $title = $_POST['title'];
-        $content = $_POST['content'];
-        $userID = $_SESSION['user_id'];
+        $title    = $_POST['title'];
+        $content  = $_POST['content'];
+        $userID   = $_SESSION['user_id'];
         $moduleID = $_POST['module'];
 
+        // Default: no image
+        $imgPath = null;
+
+        // --- IMAGE HANDLING ---
         if (isset($_FILES['image'])) {
-            // Path to the folder to save file 
             $targetDir = "uploads/";
-            $uuid = bin2hex(random_bytes(16));
-            $uploadOk = 1;
-            $fileType = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
-            $targetFile = $targetDir . $uuid . '.' . $fileType;
-
-            // Check if the file already exists
-            
-
-            //check file type in 
-            $allowedTypes = ['jpg', 'png', 'jpeg', 'gif'];
-            if (!in_array($fileType, $allowedTypes)) {
-                $message = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
-                $uploadOk = 0;
-            }
-
-            if ($uploadOk == 0) {
-                $message = "Upload failed.";
-            } else {
-                if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-                    // File uploaded successfully
-                } else {
-                    $message = "Sorry, there was an error uploading your file.";
+            $targetFile = $targetDir . basename($_FILES["image"]["name"]);
+            $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+            $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+            // Check if file type is allowed
+            if (in_array($fileType, $allowedTypes)) {
+                // Generate unique filename
+                $unique_id = uniqid();
+                $newFileName = $targetDir . $unique_id . '.' . $fileType;
+                if (move_uploaded_file($_FILES["image"]["tmp_name"], $newFileName)) {
+                    $imgPath = $newFileName;
                 }
             }
+            else {
+                // Invalid file type, ignore the upload
+                $imgPath = null;
+            }
+                
         }
+        // --- END SIMPLE IMAGE HANDLING ---
 
+        // Insert post (imgPath may be NULL)
+        $sql = "INSERT INTO posts (title, content, userID, moduleID, dateCreated, imgPath)
+                VALUES (:title, :content, :userID, :moduleID, NOW(), :imgPath)";
+        $st = $pdo->prepare($sql);
+        $st->bindValue(':title', $title);
+        $content === '' ? $st->bindValue(':content', null)
+                        : $st->bindValue(':content', $content);
+        $st->bindValue(':userID', $userID);
+        $st->bindValue(':moduleID', $moduleID);
+        $imgPath === null ? $st->bindValue(':imgPath', null)
+                          : $st->bindValue(':imgPath', $imgPath);
+        $st->execute();
 
-
-
-
-        // Insert new post
-        $addPostQuery = "INSERT INTO posts (title, content, userID, moduleID, dateCreated, imgPath)
-                         VALUES (:title, :content, :userID, :moduleID, NOW(), :imgPath)";
-        $addPostsSmt = $pdo->prepare($addPostQuery);
-        $addPostsSmt->bindValue(':title', $title);
-        $addPostsSmt->bindValue(':content', $content);
-        $addPostsSmt->bindValue(':userID', $userID);
-        $addPostsSmt->bindValue(':moduleID', $moduleID);
-        $addPostsSmt->bindValue(':imgPath', $targetFile ?? null);
-        $addPostsSmt->execute();
-
-        $message = "✅ Post added successfully!";
+        $message = $message ?? "Post added successfully!";
     }
-
-
-} catch (PDOException $e){
-    $output = "Unable to connect to the database server: " . $e; 
+} catch (PDOException $e) {
+    $message = "DB error: " . $e->getMessage();
 }
-?>
 
-<?php include 'templates/addpost.html.php'; ?>
-
+include 'templates/addpost.html.php';

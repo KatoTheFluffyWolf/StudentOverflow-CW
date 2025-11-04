@@ -96,7 +96,7 @@
   <div class="comment-box shadow-sm p-3 mb-3 bg-white rounded">
     <small class="text-muted">Answered on <?= htmlspecialchars($c['created_at']) ?></small>
 
-    <!-- 👇 Entire visible comment section -->
+    <!-- Entire visible comment section -->
     <div id="comment-display-<?= $c['commentID'] ?>">
       <p class="mb-1">
         <strong><?= htmlspecialchars($c['username']) ?></strong>:
@@ -111,7 +111,7 @@
       <?php endif; ?>
     </div>
 
-    <!-- 👇 Author-only controls -->
+    <!-- Author-only controls -->
     <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $c['userID']): ?>
       <div class="d-flex gap-2 mb-2">
         <button type="button" class="btn btn-sm btn-dark" onclick="showEditForm(<?= $c['commentID'] ?>)">Edit</button>
@@ -121,7 +121,7 @@
         </form>
       </div>
 
-      <!-- 👇 Hidden edit form -->
+      <!-- Hidden edit form -->
       <form method="POST" id="edit-form-<?= $c['commentID'] ?>" 
             enctype="multipart/form-data"
             class="edit-form" style="display: none;">

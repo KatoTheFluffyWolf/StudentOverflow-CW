@@ -64,7 +64,7 @@
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" href="profile.php">Profile</a>
+            <a class="nav-link" href="user-profile.php">Profile</a>
           </li>
 
           <?php if ($role === 'student'): ?>
@@ -72,7 +72,7 @@
               <a class="nav-link" href="addpost.php">Add Post</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/studentoverflow/contact.php">Contact Admin</a>
+              <a class="nav-link" href="contact.php">Contact Admin</a>
             </li>
 
           <?php elseif ($role === 'admin'): ?>

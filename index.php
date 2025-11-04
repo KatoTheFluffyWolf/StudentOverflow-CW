@@ -17,7 +17,9 @@ try {
 
         // Insert only if this user hasn't upvoted this post
         $check = $pdo->prepare("SELECT 1 FROM post_upvotes WHERE userID = :userID AND postID = :postID");
-        $check->execute([':userID' => $userID, ':postID' => $postID]);
+        $check->bindValue(':userID', $userID);
+        $check->bindValue(':postID', $postID);
+        $check->execute();
 
         if ($check->rowCount() === 0) {
             $insert = $pdo->prepare("INSERT INTO post_upvotes (userID, postID) VALUES (:userID, :postID)");

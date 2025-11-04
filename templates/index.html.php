@@ -3,11 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Newsfeed</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
-  />
   <style>
     body { background-color: #dae0e6; font-family: Arial; }
 
@@ -64,7 +59,11 @@
           </div>
 
           <h4><?= htmlspecialchars($p['title']) ?></h4>
-          <p><?= htmlspecialchars($p['content']) ?></p>
+          <p>
+            <?= htmlspecialchars(strlen($p['content']) > 150 
+                ? substr($p['content'], 0, 150) . '...' 
+                : $p['content']) ?>
+          </p>
           
           <?php if ($p['imgPath']): ?>
           <img src="<?= htmlspecialchars($p['imgPath']) ?>" alt="Post Image" class="post-image img-fluid">

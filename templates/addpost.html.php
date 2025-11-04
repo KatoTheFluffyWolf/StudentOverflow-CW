@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Add Post</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
       background-color: #dae0e6;
@@ -41,15 +40,15 @@
     <form action="" method="POST" enctype="multipart/form-data">
         <ul class="nav nav-tabs mb-3" id="postTab" role="tablist">
             <li class="nav-item">
-            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#post">Post</button>
+              <button type="button" class="nav-link active" data-bs-toggle="tab" data-bs-target="#post">Post</button>
             </li>
             <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#image">Image</button>
+              <button type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#image">Image</button>
             </li>
         </ul>
 
         <div class="tab-content">
-            <div class="tab-pane fade show active" id="post">
+            <div class="tab-pane fade show active" id="post"> <!-- Post Tab -->
             <div class="mb-3">
                 <input type="text" name="title" class="form-control" placeholder="Title" required>
             </div>
@@ -71,9 +70,9 @@
             </div>
             </div>
 
-            <div class="tab-pane fade" id="image">
+            <div class="tab-pane fade" id="image"> <!-- Image Tab -->
             <div class="mb-3">
-                <input type="file" name="image" class="form-control">
+                <input type="file" name="image" class="form-control" >
             </div>
             </div>
         </div>
@@ -85,11 +84,7 @@
             </div>
             <?php endif; ?>
     </form>
-
-
     </div>
   </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
