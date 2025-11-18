@@ -85,6 +85,9 @@
             <li class="nav-item">
               <a class="nav-link" href="manage_modules.php">Manage Modules</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="stats.php">View Stats</a>
+            </li>
           <?php endif; ?>
 
           <li class="nav-item">
