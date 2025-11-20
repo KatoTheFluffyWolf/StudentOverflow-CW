@@ -14,7 +14,7 @@
 
     .card {
       margin: 15px auto;
-      max-width: 80vw;
+      max-width: vw;
       border-radius: 10px;
       transition: transform 0.1s ease, box-shadow 0.1s ease;
     }
@@ -35,6 +35,15 @@
     .text-primary {
       color: #ff4500 !important;
     }
+    .post-image {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      max-height: 800px;
+      object-fit: cover;
+      margin: 10px auto;  /* auto left/right = centered */
+      border-radius: 6px;
+}
   </style>
 </head>
 <body>
