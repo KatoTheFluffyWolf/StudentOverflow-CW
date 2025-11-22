@@ -41,7 +41,25 @@ try {
             if (!empty($user['avatarPath']) && file_exists($user['avatarPath'])) {
                 unlink($user['avatarPath']);
             }
-
+            // Unlink user's posts' images
+            $imgStmt = $pdo->prepare("SELECT imgPath FROM posts WHERE userID = :id");
+            $imgStmt->bindValue(':id', $userID);
+            $imgStmt->execute();
+            $images = $imgStmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($images as $img) {
+                if (!empty($img['imgPath']) && file_exists($img['imgPath'])) {
+                    unlink($img['imgPath']);
+                }
+            }
+            
+            // Delete user's comments
+            $delcomments = $pdo->prepare("DELETE FROM post_comments WHERE userID = :id");
+            $delcomments->bindValue(':id', $userID);
+            $delcomments->execute();
+            // Delete user's upvotes
+            $delupvotes = $pdo->prepare("DELETE FROM post_upvotes WHERE userID = :id");
+            $delupvotes->bindValue(':id', $userID);
+            $delupvotes->execute();
             // Delete their posts too
             $delpost = $pdo->prepare("DELETE FROM posts WHERE userID = :id");
             $delpost->bindValue(':id', $userID);
