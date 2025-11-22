@@ -31,8 +31,11 @@
               <p class="card-text mb-1"><strong>Email:</strong> <?= htmlspecialchars($user['email']) ?></p>
               <p class="card-text mb-1"><strong>Role:</strong> <?= htmlspecialchars($user['role']) ?></p>
               <a href="user-profile.php?id=<?= $user['userID'] ?>" class="btn btn-warning btn-sm">Edit</a>
-              <a href="delete-user.php?id=<?= $user['userID'] ?>" class="btn btn-danger btn-sm"
-                 onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
+              <form method="post" class="d-inline">
+                <input type="hidden" name="delete_id" value="<?= $user['userID'] ?>">
+                <button type="submit" class="btn btn-danger btn-sm"
+                        onclick="return confirm('Delete this user?')">Delete</button>
+              </form>
             </div>
           </div>
         </div>
