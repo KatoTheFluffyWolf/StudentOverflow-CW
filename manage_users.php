@@ -13,9 +13,56 @@ $success = '';
 try {
     $pdo = new PDO($dsn, $DB_USER, $DB_PASS);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // ---------- HANDLE ADD USER FORM SUBMIT ----------
+    
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (isset($_POST['delete_id'])) {
+            // Handle delete user
+            $deleteId = (int) $_POST['delete_id'];
+            
+            //Delete upvotes associated with the user
+            $upvoteDeleteStmt = $pdo->prepare("DELETE FROM post_upvotes WHERE userID = :id");
+            $upvoteDeleteStmt->bindValue(':id', $deleteId);
+            $upvoteDeleteStmt->execute();
+
+            //Unlink posts' images associated with the user
+            $imgSelectStmt = $pdo->prepare("SELECT imgPath FROM posts WHERE userID = :id");
+            $imgSelectStmt->bindValue(':id', $deleteId);
+            $imgSelectStmt->execute();
+            $images = $imgSelectStmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($images as $img) {
+                if (!empty($img['imgPath']) && file_exists($img['imgPath'])) {
+                    unlink($img['imgPath']); // Delete the image file
+                }
+            }
+
+            //Delete posts associated with the user
+            $postDeleteStmt = $pdo->prepare("DELETE FROM posts WHERE userID = :id");
+            $postDeleteStmt->bindValue(':id', $deleteId);
+            $postDeleteStmt->execute();
+
+            //Delete Comments associated with the user
+            $commentDeleteStmt = $pdo->prepare("DELETE FROM post_comments WHERE userID = :id");
+            $commentDeleteStmt->bindValue(':id', $deleteId);
+            $commentDeleteStmt->execute();
+
+            //unlink profile image if any
+            $profileImgStmt = $pdo->prepare("SELECT avatarPath FROM users WHERE userID = :id");
+            $profileImgStmt->bindValue(':id', $deleteId);  
+            $profileImgStmt->execute();
+            $profileImg = $profileImgStmt->fetch(PDO::FETCH_ASSOC);
+            if (!empty($profileImg['avatarPath']) && file_exists($profileImg['avatarPath'])) {
+                unlink($profileImg['avatarPath']); // Delete the profile image file
+            }
+            // Finally, delete the user
+            $deleteStmt = $pdo->prepare("DELETE FROM users WHERE userID = :id");
+            $deleteStmt->bindValue(':id', $deleteId);
+            $deleteStmt->execute();
+
+            // Prevent form resubmission on refresh
+            header('Location: ' . $_SERVER['PHP_SELF'] . '?deleted=1');
+            exit;
+        }
+
         $username = $_POST['username'] ?? '';
         $name     = $_POST['name'] ?? '';
         $email    = $_POST['email'] ?? '';
@@ -28,10 +75,9 @@ try {
         } else {
             // Optional: check for existing username or email
             $checkStmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE username = :username OR email = :email");
-            $checkStmt->execute([
-                ':username' => $username,
-                ':email'    => $email
-            ]);
+            $checkStmt->bindValue(':username', $username);
+            $checkStmt->bindValue(':email', $email);
+            $checkStmt->execute();
 
             if ($checkStmt->fetchColumn() > 0) {
                 $errors[] = 'Username or email already exists.';
