@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name    = htmlspecialchars($_POST["name"]);
     $subject = htmlspecialchars($_POST["subject"]);
     $content = htmlspecialchars($_POST["message"]);
-    $email = "anhndgcc240003@gmail.com"; // Your email address
+    $email = $_SESSION['email'];
     $adminEmail = "anhndgcc240003@gmail.com"; // Admin email address
 
     $mail = new PHPMailer(true);
