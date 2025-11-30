@@ -23,7 +23,7 @@ try {
     }
 
     // Fetch user info
-    $stmt = $pdo->prepare("SELECT username, email, bio, avatarPath FROM users WHERE userID = :id");
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE userID = :id");
     $stmt->bindValue(':id', $userID);
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -87,11 +87,12 @@ try {
         $username = $_POST['username'];
         $email = $_POST['email'];
         $bio = $_POST['bio'];
+        $fullname = $_POST['fullname'];
         $passwordSQL = '';
         $error = '';
         $success = '';
 
-        // 🔍 Check if email is already used by another account
+        // Check if email is already used by another account
         $checkEmail = $pdo->prepare("SELECT userID FROM users WHERE email = :email AND userID != :id");
         $checkEmail->bindValue(':email', $email);
         $checkEmail->bindValue(':id', $userID);
@@ -113,11 +114,12 @@ try {
 
                 $fileTmp = $_FILES['avatarPath']['tmp_name'];
                 $fileName = $unique_id . '_' . basename($_FILES['avatarPath']['name']);
+                $fileType = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
                 $targetFile = $uploadDir . $fileName;
 
-                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-                if (in_array($_FILES['avatarPath']['type'], $allowedTypes)) {
+                $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+                if (in_array($fileType, $allowedTypes)) {
                     move_uploaded_file($fileTmp, $targetFile);
                     $avatarPath = $targetFile;
                 } else {
@@ -129,12 +131,13 @@ try {
                 // Update user info in the database
                 $update = $pdo->prepare("
                     UPDATE users 
-                    SET username = :username, email = :email, bio = :bio, avatarPath = :avatar
+                    SET username = :username, email = :email, name = :name, bio = :bio, avatarPath = :avatar
                     $passwordSQL
                     WHERE userID = :id
                 ");
                 $update->bindValue(':username', $username);
                 $update->bindValue(':email', $email);
+                $update->bindValue(':name', $fullname);
                 $update->bindValue(':bio', $bio);
                 $update->bindValue(':avatar', $avatarPath);
                 $update->bindValue(':id', $userID);
