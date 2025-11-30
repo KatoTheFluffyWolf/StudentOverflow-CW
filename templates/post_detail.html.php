@@ -8,7 +8,14 @@
     .post-card { background: white; border-radius: 10px; padding: 20px; }
     .comment-box { background: white; border-radius: 10px; padding: 15px; margin-top: 10px; }
     .btn-primary { background-color: #ff4500; border: none; }
-    .post-image { margin-top: 15px; border-radius: 8px; }
+    .post-image { 
+      display: block;
+      max-width: 100%;
+      height: auto;
+      max-height: 800px;
+      object-fit: cover;
+      margin: 10px auto;  /* auto left/right = centered */
+      border-radius: 6px;}
     .btn-primary:hover { background-color: #e03e00; }
   </style>
 </head>
@@ -84,10 +91,10 @@
   <h5>Comments</h5>
   <?php if (isset($_SESSION['user_id'])): ?>
     <form method="POST" class="mt-2" enctype="multipart/form-data">
-      <textarea name="comment" class="form-control mb-2" rows="5" placeholder="Write a comment..."></textarea>
+      <textarea name="comment" class="form-control mb-2" rows="5" placeholder="Write a comment..." required></textarea>
       <input type="file" name="commentImage" class="form-control mb-2">
       <button type="submit" class="btn btn-primary">Post Comment</button>
-    </form>
+    </form> 
   <?php else: ?>
     <p><a href="login.php" class="btn btn-outline-primary">Log in to comment</a></p>
   <?php endif; ?>

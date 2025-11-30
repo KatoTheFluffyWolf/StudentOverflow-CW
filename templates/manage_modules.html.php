@@ -60,30 +60,37 @@
   <div class="modal-dialog">
     <form method="POST" class="modal-content">
       <input type="hidden" name="mode" id="mode" value="edit">
+
       <div class="modal-header">
         <h5 class="modal-title" id="editModuleModalLabel">Edit Module</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
+
       <div class="modal-body">
         <input type="hidden" name="edit_id" id="edit_id">
          <div class="mb-3">
           <label for="edit_module_id" class="form-label">Module ID</label>
           <input type="text" class="form-control" name="edit_module_id" id="edit_module_id" required>
         </div>
+
         <div class="mb-3">
           <label for="edit_name" class="form-label">Module Name</label>
           <input type="text" class="form-control" name="edit_name" id="edit_name" required>
         </div>
       </div>
+
       <div class="modal-footer">
         <?php if (!empty($message)): ?>
             <div class="alert alert-success text-center mt-3">
                 <?php echo htmlspecialchars($message); ?>
             </div>
             <?php endif; ?>
+
         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
         <button type="submit" class="btn btn-primary">Save changes</button>
+        
       </div>
+
     </form>
   </div>
 </div>
@@ -120,7 +127,6 @@ editModal.addEventListener('show.bs.modal', (event) => {
     modeInput.value = 'edit';
   }
 });
-</script>
 </script>
 </body>
 </html>
