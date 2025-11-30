@@ -57,7 +57,7 @@ if (isset($_SESSION['user_id'])) {
 if (isset($_POST['delete']) && isset($_SESSION['user_id'])) {
 
 if (!empty($post['imgPath']) && file_exists($post['imgPath'])) {
-    unlink($post['imgPath']); // 🗑️ Delete the image file
+    unlink($post['imgPath']); // Delete the image file
   }
 
 
@@ -83,7 +83,7 @@ if (isset($_POST['edit']) && isset($_SESSION['user_id'])) {
   if (isset($_FILES['edited_image'])) {
     $targetDir = "uploads/";
 
-    $uuid = bin2hex(random_bytes(16));
+    $uuid = uniqid();
     $fileType = strtolower(pathinfo($_FILES["edited_image"]["name"], PATHINFO_EXTENSION));
     $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
 
@@ -115,7 +115,7 @@ if (isset($_POST['edit']) && isset($_SESSION['user_id'])) {
 }
 // Handle new comment
 if (isset($_POST['comment'])) {
-  $commentContent = trim($_POST['comment']);
+  $commentContent = $_POST['comment'];
   $targetFile = null;
 
   if (isset($_FILES['commentImage'])) {
@@ -169,7 +169,7 @@ if (isset($_POST['delete_comment_id']) && isset($_SESSION['user_id'])) {
   }
 
   $delete = $pdo->prepare("DELETE FROM post_comments WHERE commentID = :cid AND userID = :uid");
-  $delte->bindValue(':cid', $commentID);
+  $delete->bindValue(':cid', $commentID);
   $delete->bindValue(':uid', $_SESSION['user_id']);
   $delete->execute();
   header("Location: post_detail.php?id=$postID");
@@ -179,7 +179,7 @@ if (isset($_POST['delete_comment_id']) && isset($_SESSION['user_id'])) {
 // Handle comment edit
 if (isset($_POST['edit_comment_id']) && isset($_SESSION['user_id'])) {
   $commentID = (int) $_POST['edit_comment_id'];
-  $newText = trim($_POST['edited_comment']);
+  $newText = $_POST['edited_comment'];
 
   if ($newText !== '') {
     $update = $pdo->prepare("UPDATE post_comments SET content = :content WHERE commentID = :cid AND userID = :uid");

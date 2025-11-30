@@ -37,9 +37,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mail->Body    = $content;
 
         $mail->send();
-        $message = '✅ Message sent!';
+        $message = 'Message sent!';
     } catch (Exception $e) {
-        $message = "❌ Error: {$mail->ErrorInfo}";
+        $message = "Error: {$mail->ErrorInfo}";
     }
 }
 ?>

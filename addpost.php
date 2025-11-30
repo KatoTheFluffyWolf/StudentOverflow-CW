@@ -41,7 +41,6 @@ try {
             }
                 
         }
-        // --- END SIMPLE IMAGE HANDLING ---
 
         // Insert post (imgPath may be NULL)
         $sql = "INSERT INTO posts (title, content, userID, moduleID, dateCreated, imgPath)

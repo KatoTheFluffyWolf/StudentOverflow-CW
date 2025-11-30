@@ -73,7 +73,7 @@ try {
         if ($username === '' || $name === '' || $email === '' || $password === '' || $role === '') {
             $errors[] = 'All fields are required.';
         } else {
-            // Optional: check for existing username or email
+            // check for existing username or email
             $checkStmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE username = :username OR email = :email");
             $checkStmt->bindValue(':username', $username);
             $checkStmt->bindValue(':email', $email);
