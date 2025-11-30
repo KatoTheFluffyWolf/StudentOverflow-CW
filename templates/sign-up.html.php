@@ -38,7 +38,11 @@
       <form action="" method="POST">
         <div class="mb-3">
           <label for="username" class="form-label fs-5">Username</label>
-          <input type="text" class="form-control form-control-lg" id="username" name="username" aria-describedby="emailHelp" required>
+          <input type="text" class="form-control form-control-lg" id="username" name="username"  required>
+        </div>
+        <div class="mb-3">
+          <label for="fullname" class="form-label fs-5">Full Name</label>
+          <input type="text" class="form-control form-control-lg" id="fullname" name="fullname"  required>
         </div>
         <div class="mb-3">
           <label for="email" class="form-label fs-5">Email</label>
