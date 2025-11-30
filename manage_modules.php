@@ -28,12 +28,10 @@ try {
         $stmt->bindValue(':name', $name);
         $stmt->bindValue(':oldId', $oldId);
         $stmt->execute();
-        $message = "Module updated successfully!";
     } elseif (isset($_POST['delete_id'])) { // delete
         $stmt = $pdo->prepare("DELETE FROM modules WHERE moduleID = :id");
         $stmt->bindValue(':id', $_POST['delete_id']);
         $stmt->execute();
-        $message = "Module deleted successfully!";
     }
   }
 
